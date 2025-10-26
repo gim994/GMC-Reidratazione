@@ -32,11 +32,7 @@ body {
 #formulebox {
     display: none; /* Nascosto all'avvio */
 }
- 
- // 🔒 Nascondi definitivamente il blocco dei pulsanti
-.option-buttons {
-  display: none;
-}
+
 
 
 /* Stile per il cerchietto con il punto interrogativo */

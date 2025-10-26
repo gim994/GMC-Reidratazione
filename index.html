@@ -30,7 +30,7 @@ di cui se ne consiglia la lettura per una più chiara comprensione dei meccanism
 Anche la glicemia è parametro indispensabile per la scelta della soluzione per evitare l’incongrua somministrazione di glucosio a bambini disidratati ma diabetici.</p>
 <p>Infine anche la creatinemia sarà utile per escludere la concomitante presenza di insufficienza renale, per escludere l’insufficienza renale, la cui presenza richiede accorgimenti speciali e diversi da quelli esposti che valgono per il bambino normale.</p>
 <p>In assenza di tutte queste informazioni potrà essere usata solo la soluzione fisiologica (NaCl 0.9% = 154 mEq/l) o Ringer (Sodio Lattato/Acetato 132 mEq/l). 
-Quanto già infuso (acqua e NaCl) sotto forma di soluzione fisiologica o Ringer (in attesa dell’esito degli accertamenti) andrà sottratto dal computo totale.</p>
+Quanto già infuso (acqua e NaCl) sotto forma di soluzione fisiologica o Ringer (in attesa dell’esito degli accertamenti) andrà sottratto dal computo totale (vedi formule dalla n°15 alla n°20) dal programma infusionale.</p>
 <p>E' bene che le variazioni di Na plasmatico siano tanto minori quanto più la natremia è alterata: 24 mEq/L/die per natriemie comprese tra 115 e 165 mEq/L; 12 mEq/L/die per natremie comprese tra 105-115 e 165-175 mEq/L; 6 mEq/L/die per  valori di partenza &gt;175 o &lt;105  mEq/L.</p> 
 <p>E' bene ricordare che questo calcolatore fornisce una stima matematica di come impostare la reidratazione. In corso d’opera il programma potrà/dovrà essere individualizzato anche sulla base dei valori di laboratorio e sulla situazione clinica del singolo paziente.</p>
 <p><strong>Per eventuali dubbi sulla compilazione basterà passare il cursore sopra al simbolo "?” per ottenere le specifiche relative al campo in esame</strong></p>
@@ -74,15 +74,23 @@ Quanto già infuso (acqua e NaCl) sotto forma di soluzione fisiologica o Ringer 
 
 <li>Eccesso / difetto di Na (mEq) = (Na desiderato (mmol/l) - Na attuale corretto per glicemia (mmol/l)) * Acqua Corporea (%)) * Working Weight (Kg)</li>
 
-<li>Volume totale (ml) = Perdite (ml) + Perdite Prevedibili (ml) + ml Mantenimento (ml)</td>
+<li>Soluzione precedente (mEq) = Soluzione precedente (ml) * Na soluzione (mEq/l)/1000</li>
 
-<li>Totale Na (mEq) = Perdite Na (mEq) + Eccesso / difetto di Na (mEq) + Perdite Prevedibili Na (mEq) + Mantenimento Na (mEq)</li>
+<li>Soluzione precedente (ml/kg) = Soluzione precedente (ml)/ Working Weight (Kg)</li>
+
+<li>Soluzione precedente flusso del glucosio (mg/kg/min) =  (Soluzione precedente(ml) * 10 * Soluzione precedente Glucosio (%)) / Working Weight (Kg) / 1440</li>
+
+<li>Altri liquidi precedenti (ml/kg) = Altri liquidi precedenti (ml)/ Working Weight (Kg)</td>
+
+<li>Volume totale (ml) = Perdite (ml) + Perdite Prevedibili (ml) + ml Mantenimento (ml) - Soluzione precedente (ml) - Altri liquidi precedenti (ml)</td>
+
+<li>Totale Na (mEq) = Perdite Na (mEq) + Eccesso / difetto di Na (mEq) + Perdite Prevedibili Na (mEq) + Mantenimento Na (mEq) - Soluzione precedente (mEq) - Altri liquidi precedenti Na (mEq)</li>
 
 <li>Volume totale per Kg di peso (ml/kg) =  Volume totale (ml) / Working Weight (Kg)</li>
 
 <li>Velocità d'infusione(ml/h) = Volume totale (ml)/24</li>
 
-<li>Flusso di glucosio (mg/kg/min) = ((Volume totale (ml) * 10 * Soluzione di partenza Glucosio (%)) / Working Weight (Kg) / 1440)</li>
+<li>Flusso di glucosio (mg/kg/min) = ((Volume totale (ml) * 10 * Soluzione di partenza Glucosio (%)) / Working Weight (Kg) / 1440) + Soluzione precedente flusso del glucosio (mg/kg/min) + Altri liquidi precedenti flusso del glucosio (mg/kg/min)</li>
 
 </ol>
 <button id="closeButton2">Chiudi</button>
@@ -232,6 +240,92 @@ Quanto già infuso (acqua e NaCl) sotto forma di soluzione fisiologica o Ringer 
         </div>
 			</label>
             <output id="naCorretto" class="output-field"></output>
+        </div>
+
+        <div id="soluzioneTipoContainer" class="input-container">
+            <label for="solutionType">Soluzione precedente infusa (tipo):
+							<div class="tooltip-icon" id="tooltipIcon11">?
+            <div class="tooltip-text" id="tooltipText11">
+			Se prima dell’inizio dell’attuale programma infusionale, nelle poche ore immediatamente precedenti, è stata utilizzata un’altra soluzione, selezionare dal menù a tendina sottostante il tipo di soluzione. Il dato verrà usato per sottrarre dal programma infusionale il volume e il sodio già infusi.
+		            </div>
+        </div>
+			</label>
+    <select id="solutionType">
+            <option value="SF0.9">Fisiologica 0,9% (Na: 154 mEq/l; Glu 0%)</option>
+			<option value="Gal">Personalizzata (Na e Glu da inserire manualmente)</option>	
+            <option value="S2">Soluzione II (Na: 154 mEq/l; Glu 5%)</option>
+            <option value="S3">Soluzione III (Na: 77 mEq/l; Glu 2.5%)</option>
+            <option value="SM">Bilanciata di mantenimento (Na: 40 mEq/l; Glu 5%)</option>
+            <option value="NR">Normosol R (Na: 140 mEq/l; Glu 5%)</option>
+            <option value="NM">Normosol M (Na: 40 mEq/l; Glu 5%)</option>				
+            <option value="R1">Reidratante I (Na: 120 mEq/l; Glu 0%)</option>
+            <option value="R2">Reidratante II (Na: 133 mEq/l; Glu 0%)</option>
+            <option value="R3">Reidratante III (Na: 140 mEq/l; Glu 0%)</option>
+            <option value="R">Ringer (Na: 132 mEq/l; Glu 0%)</option>
+            <option value="ESF0.45">Emifisiologica 0,45% (Na: 77 mEq/l; Glu 0%)</option>
+            <option value="I3">Ipertonica 3% (Na: 513 mEq/l; Glu 0%)</option>
+            <option value="I13">Ipertonica 1:3 (Na: 500 mEq/l; Glu 0%)</option>
+            <option value="I14">Ipertonica 1:4 (Na: 200 mEq/l; Glu 0%)</option>
+            <option value="ACQUA">Acqua PPI (Na: 0 mEq/l; Glu 0%)</option>
+            <option value="G2.5">Glucosata 2,5% (Na: 0 mEq/l; Glu 2.5%)</option>
+            <option value="G5">Glucosata 5% (Na: 0 mEq/l; Glu 5%)</option>
+            <option value="G10">Glucosata 10% (Na: 0 mEq/l; Glu 10%)</option>
+            <option value="B9324">Baxter 9324 (Na: 16.96 mEq/l; Glu 9.7%)</option>
+            <option value="B9325">Baxter 9325 (Na: 2.91 mEq/l; Glu 9.7%)</option>
+            <option value="FE">Formula E (Na: 27 mEq/l; Glu 5.4%)</option>
+            <option value="FL">Formula L (Na: 2 mEq/l; Glu 6.5%)</option>
+            <option value="FSPVC">Formula Start PVC (Na: 0.3 mEq/l; Glu 10.2%)</option>	
+        </select>
+        </div>
+        <div id="GalmeqlContainer" class="input-container hidden">
+            <label for="Galmeql">Personalizzata Na (mEq/l):
+							<div class="tooltip-icon" id="tooltipIcon12">?
+            <div class="tooltip-text" id="tooltipText12">
+			Inserire nel campo sottostante il valore di Na (mEq/l) della soluzione utilizzata.
+		            </div>
+        </div>
+			</label>
+            <input type="number" id="Galmeql" placeholder="mEq/l">
+        </div>
+        <div id="GalpercgluContainer" class="input-container hidden">
+            <label for="Galgluperc">Personalizzata Glucosio (%):
+							<div class="tooltip-icon" id="tooltipIcon13">?
+            <div class="tooltip-text" id="tooltipText13">
+			Inserire nel campo sottostante il valore di Glucosio (%) della soluzione utilizzata.
+		            </div>
+        </div>
+			</label>
+            <input type="number" id="Galgluperc" placeholder="%">
+        </div>		
+        <div id="soluzioneMlContainer" class="input-container">
+            <label for="soluzioneMl">Soluzione precedente infusa (ml):
+							<div class="tooltip-icon" id="tooltipIcon14">?
+            <div class="tooltip-text" id="tooltipText14">
+			Se prima dell’inizio dell’attuale programma infusionale, nelle poche ore immediatamente precedenti, è stata utilizzata un’altra soluzione, selezionare dal menù a tendina sottostante il tipo di soluzione. Il dato verrà usato per sottrarre dal programma infusionale il volume e il sodio già infusi.
+		            </div>
+        </div>
+			</label>
+            <input type="number" id="soluzioneMl" placeholder="ml">
+        </div>
+        <div id="liquidiAggiuntiContainer" class="input-container">
+            <label for="liquidiAggiuntiMl">Altri liquidi somministrati precedentemente (ml):
+							<div class="tooltip-icon" id="tooltipIcon15">?
+            <div class="tooltip-text" id="tooltipText15">
+			Se il paziente ha assunto altri liquidi e non si conoscono i mEq/l ma si conoscono gli ml e i mEq infusi allora si può utilizzare il campo sottostante. Il dato verrà usato per sottrarre dal programma infusionale il volume e il sodio già infusi.
+		            </div>
+        </div>
+			</label>
+            <input type="number" id="liquidiAggiuntiMl" placeholder="ml">
+        </div>
+        <div id="liquidiAggiuntiNaContainer" class="input-container">
+            <label for="liquidiAggiuntiNa">Altri liquidi somministrati precedentemente (Na mEq):
+							<div class="tooltip-icon" id="tooltipIcon16">?
+            <div class="tooltip-text" id="tooltipText16">
+			Se il paziente ha assunto altri liquidi e non si conoscono i mEq/l ma si conoscono gli ml e i mEq infusi allora si può utilizzare il campo sottostante. Il dato verrà usato per sottrarre dal programma infusionale il volume e il sodio già infusi.
+		            </div>
+        </div>
+			</label>
+            <input type="number" id="liquidiAggiuntiNa" placeholder="mEq">
         </div>
     </div>	
 </div>
@@ -467,6 +561,24 @@ Quanto già infuso (acqua e NaCl) sotto forma di soluzione fisiologica o Ringer 
                 <td></td>
                 <td colspan="3"></td>
             </tr>  
+            <tr>
+                <td>Soluzione precedente infusa</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td colspan="3"></td>
+            </tr>
+            <tr>
+                <td>Altri liquidi precedenti</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td colspan="3"></td>
+            </tr>
             <tr>
                 <td>Totale</td>
                 <td></td>
