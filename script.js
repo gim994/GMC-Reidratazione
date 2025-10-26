@@ -6,7 +6,6 @@ const numberOutput5Container = document.getElementById('numberOutput5Container')
 
 
 // AGGIORNAMENTO CONTAINER OUTPUT
-let Galmeqlpart, Galglupercpart;
 let TotMl, Totmgkgmin, TotMeq, Totmlh, TotMeql;
 let mantenimentoMlh, mlh, mantenimentoMl, mantenimentoMlkg, TotaleMl, TotaleMlkg;
 let birthWeight = 0
@@ -135,78 +134,6 @@ tooltipIcon10.addEventListener('mouseleave', () => {
     tooltipText10.classList.remove('show');
 });
 
-// Tooltip per il secondo campo
-const tooltipIcon11 = document.getElementById('tooltipIcon11');
-const tooltipText11 = document.getElementById('tooltipText11');
-
-tooltipIcon11.addEventListener('mouseenter', () => {
-    tooltipText11.classList.add('show');
-});
-
-tooltipIcon11.addEventListener('mouseleave', () => {
-    tooltipText11.classList.remove('show');
-});
-
-// Tooltip per il secondo campo
-const tooltipIcon12 = document.getElementById('tooltipIcon12');
-const tooltipText12 = document.getElementById('tooltipText12');
-
-tooltipIcon12.addEventListener('mouseenter', () => {
-    tooltipText12.classList.add('show');
-});
-
-tooltipIcon12.addEventListener('mouseleave', () => {
-    tooltipText12.classList.remove('show');
-});
-
-// Tooltip per il secondo campo
-const tooltipIcon13 = document.getElementById('tooltipIcon13');
-const tooltipText13 = document.getElementById('tooltipText13');
-
-tooltipIcon13.addEventListener('mouseenter', () => {
-    tooltipText13.classList.add('show');
-});
-
-tooltipIcon13.addEventListener('mouseleave', () => {
-    tooltipText13.classList.remove('show');
-});
-
-// Tooltip per il secondo campo
-const tooltipIcon14 = document.getElementById('tooltipIcon14');
-const tooltipText14 = document.getElementById('tooltipText14');
-
-tooltipIcon14.addEventListener('mouseenter', () => {
-    tooltipText14.classList.add('show');
-});
-
-tooltipIcon14.addEventListener('mouseleave', () => {
-    tooltipText14.classList.remove('show');
-});
-
-// Tooltip per il secondo campo
-const tooltipIcon15 = document.getElementById('tooltipIcon15');
-const tooltipText15 = document.getElementById('tooltipText15');
-
-tooltipIcon15.addEventListener('mouseenter', () => {
-    tooltipText15.classList.add('show');
-});
-
-tooltipIcon15.addEventListener('mouseleave', () => {
-    tooltipText15.classList.remove('show');
-});
-
-// Tooltip per il secondo campo
-const tooltipIcon16 = document.getElementById('tooltipIcon16');
-const tooltipText16 = document.getElementById('tooltipText16');
-
-tooltipIcon16.addEventListener('mouseenter', () => {
-    tooltipText16.classList.add('show');
-});
-
-tooltipIcon16.addEventListener('mouseleave', () => {
-    tooltipText16.classList.remove('show');
-});
-
 
 // Tooltip per il secondo campo
 const tooltipIcon18 = document.getElementById('tooltipIcon18');
@@ -310,10 +237,6 @@ closeButtonFormule.addEventListener("click", function() {
     formuleBox.style.display = "none";
 });
 
-document.getElementById('solutionType').addEventListener('change', function() {
-    const solutionType = document.getElementById('solutionType').value;
-    console.log(`Solution type selected: ${solutionType}`);
-});
 
 document.getElementById('advancedBtn').addEventListener('click', function() {
     let advancedContainer = document.getElementById('advancedContainer');
@@ -323,6 +246,10 @@ document.getElementById('advancedBtn').addEventListener('click', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+
+    // 🔒 Nascondi definitivamente il blocco dei pulsanti
+    document.querySelector('.option-buttons').style.display = 'none';
+
     document.getElementById('glicemia').value = 100;
     setActiveButton('dateButton');
     document.getElementById('dateInputContainer').style.display = 'block';
@@ -332,9 +259,9 @@ document.addEventListener('DOMContentLoaded', function() {
     numberOutput2Container.style.display = 'flex';
     numberOutput3Container.style.display = 'flex';
     numberOutput4Container.style.display = 'flex';
-    numberOutput5Container.style.display = 'flex';	
-	    
-	aggiornaSpecificheTable();  // Questa chiamata assicura che tutto sia calcolato e aggiornato correttamente all'inizio
+    numberOutput5Container.style.display = 'flex';
+
+    aggiornaSpecificheTable();
 });
 	
 	
@@ -565,27 +492,6 @@ function toggleVisibility(containerId, button, showText, hideText) {
     button.textContent = container.classList.contains('hidden') ? showText : hideText;
 }
 
-document.getElementById('solutionType').addEventListener('change', function() {
-    var selectedValue = this.value;
-    var galmeqlContainer = document.getElementById('GalmeqlContainer');
-
-    if (selectedValue === 'Gal') {
-        galmeqlContainer.classList.remove('hidden');
-    } else {
-        galmeqlContainer.classList.add('hidden');
-    }
-});
-
-document.getElementById('solutionType').addEventListener('change', function() {
-    var selectedValue = this.value;
-    var GalpercgluContainer = document.getElementById('GalpercgluContainer');
-
-    if (selectedValue === 'Gal') {
-        GalpercgluContainer.classList.remove('hidden');
-    } else {
-        GalpercgluContainer.classList.add('hidden');
-    }
-});
 
 function aggiornaSpecificheTable() {
     const WA = parseFloat(document.getElementById('WA').value) || 0;
@@ -597,9 +503,6 @@ function aggiornaSpecificheTable() {
     const temperatura = parseFloat(document.getElementById('temperatura').value) || 0;
     const glicemia = parseFloat(document.getElementById('glicemia').value) || 100;
     const febbre = temperatura < 38 ? 38 : temperatura;
-	const Galmeql = parseFloat(document.getElementById('Galmeql') ? document.getElementById('Galmeql').value : 0) || 0;
-	const Galgluperc = parseFloat(document.getElementById('Galgluperc') ? document.getElementById('Galgluperc').value : 0) || 0;
-
 
     const Naig = Nai + 0.024 * (glicemia - 100);
     document.getElementById('naCorretto').value = Naig.toFixed(0);
@@ -726,40 +629,7 @@ const infusionepercentglu = {
     };		
     const infusionipercentglu = infusionepercentglu[infusionepercentgluType] || { glucosio: 0 };
 
-    const soluzioneMl = parseFloat(document.getElementById('soluzioneMl').value) || 0;
-    const solutionType = document.getElementById('solutionType').value;
-    const liquidiAggiuntiMl = parseFloat(document.getElementById('liquidiAggiuntiMl').value) || 0;
-    const liquidiAggiuntiNa = parseFloat(document.getElementById('liquidiAggiuntiNa').value) || 0;
-
-    const soluzioni = {
-        "SF0.9": { mEq: 154, glucosio: 0 },
-        "S2": { mEq: 154, glucosio: 5 },
-        "S3": { mEq: 77, glucosio: 2.5 },
-        "SM": { mEq: 40, glucosio: 5.5 },
-        "NR": { mEq: 140, glucosio: 5 },
-        "NM": { mEq: 40, glucosio: 5 },		
-        "R1": { mEq: 120, glucosio: 0 },
-        "R2": { mEq: 133, glucosio: 0 },
-        "R3": { mEq: 140, glucosio: 0 },
-        "R": { mEq: 132, glucosio: 0 },
-        "ESF0.45": { mEq: 77, glucosio: 0 },
-        "I3": { mEq: 513, glucosio: 0 },
-        "I13": { mEq: 500, glucosio: 0 },
-        "I14": { mEq: 400, glucosio: 0 },
-        "ACQUA": { mEq: 0, glucosio: 0 },
-        "G2.5": { mEq: 0, glucosio: 2.5 },
-        "G5": { mEq: 0, glucosio: 5 },
-        "G10": { mEq: 0, glucosio: 10 },
-        "B9324": { mEq: 16.96, glucosio: 9.7 },
-        "B9325": { mEq: 2.91, glucosio: 9.7 },
-		"FE": { mEq: 27, glucosio: 5.4 },
-		"FL": { mEq: 2, glucosio: 6.5 },
-		"FSPVC": { mEq: 0.3, glucosio: 10.2 },		
-		"Gal": { mEq: Galmeql, glucosio: Galgluperc },
-    };
-
-    const soluzione = soluzioni[solutionType] || { mEq: 0, glucosio: 0 };
-    const soluzioneMeq = soluzioneMl * soluzione.mEq / 1000;
+ 
     const PerditeMl = (WW - WA) * 1000;
     const PerditeMlkg = PerditeMl / WW;
     const PerditeMeq = PerditeMl * 140 / 1000;
@@ -768,12 +638,8 @@ const infusionepercentglu = {
     const PerditeprevedibiliMlkg = PerditeprevedibiliMl / WW;
     const AcquaPerc = getAcquaPerc();
     const mantenimentoMlh = mantenimentoMl / 24;
-    const soluzioneMlkg = soluzioneMl / WW;
-    const liquidiAggiuntiMlkg = liquidiAggiuntiMl / WW;
-    const liquidiAggiuntimeql = liquidiAggiuntiNa / (liquidiAggiuntiMl / 1000) || 0;
     const mgkgminmantenimento = (mantenimentoMl * 10 * infusionipercentglu.glucosio) / WW / 1440;
-    const mgkgminmsoluzione = (soluzioneMl * 10 * soluzione.glucosio) / WW / 1440;
-	const TotMl = PerditeMl + PerditeprevedibiliMl + mantenimentoMl - soluzioneMl - liquidiAggiuntiMl;
+	const TotMl = PerditeMl + PerditeprevedibiliMl + mantenimentoMl;
 	
 		if (Naig >= 135 && Naig <= 145) {
     SodioDaPerdereRecuperare = 0;
@@ -781,8 +647,8 @@ const infusionepercentglu = {
     SodioDaPerdereRecuperare = (Nap - Naig) * AcquaPerc * WW;
 }
 	
-    const TotMeq = ((PerditeMeq + SodioDaPerdereRecuperare)) + PerditeprevedibiliMeq + mantenimentoMeq() - soluzioneMeq - liquidiAggiuntiNa;
-    const Totmgkgmin = ((TotMl * 10 * infusionipercentglu.glucosio) / WW / 1440) + mgkgminmsoluzione;
+    const TotMeq = ((PerditeMeq + SodioDaPerdereRecuperare)) + PerditeprevedibiliMeq + mantenimentoMeq();
+    const Totmgkgmin = ((TotMl * 10 * infusionipercentglu.glucosio) / WW / 1440);
     const Totmlh = TotMl / 24;
 	
 	let  TotMeql = TotMeq / (TotMl / 1000);
@@ -833,21 +699,6 @@ document.getElementById('glucosioOutputValue').textContent = Totmgkgmin.toFixed(
         tableRows[5].cells[2].textContent = SodioDaPerdereRecuperare.toFixed(0);
     }
 
-    if (tableRows.length > 6) {
-        tableRows[6].cells[1].textContent = soluzioneMl.toFixed(0);
-        tableRows[6].cells[2].textContent = soluzioneMeq.toFixed(0);
-        tableRows[6].cells[3].textContent = soluzioneMlkg.toFixed(0);
-        tableRows[6].cells[5].textContent = soluzione.mEq.toFixed(0);
-        tableRows[6].cells[6].textContent = mgkgminmsoluzione.toFixed(0);
-    }
-
-    if (tableRows.length > 7) {
-        tableRows[7].cells[1].textContent = liquidiAggiuntiMl.toFixed(0);
-        tableRows[7].cells[2].textContent = liquidiAggiuntiNa.toFixed(0);
-        tableRows[7].cells[3].textContent = liquidiAggiuntiMlkg.toFixed(0);
-        tableRows[7].cells[5].textContent = liquidiAggiuntimeql.toFixed(0);
-    }
-
     if (tableRows.length > 8) {
         tableRows[8].cells[1].textContent = TotMl.toFixed(0);
         tableRows[8].cells[2].textContent = TotMeq.toFixed(0);
@@ -886,13 +737,7 @@ document.getElementById('Nap').addEventListener('change', aggiornaSpecificheTabl
 document.getElementById('vomiti').addEventListener('input', aggiornaSpecificheTable);
 document.getElementById('diarrea').addEventListener('input', aggiornaSpecificheTable);
 document.getElementById('temperatura').addEventListener('input', aggiornaSpecificheTable);
-document.getElementById('soluzioneMl').addEventListener('input', aggiornaSpecificheTable);
-document.getElementById('solutionType').addEventListener('change', aggiornaSpecificheTable);
-document.getElementById('liquidiAggiuntiMl').addEventListener('input', aggiornaSpecificheTable);
-document.getElementById('liquidiAggiuntiNa').addEventListener('input', aggiornaSpecificheTable);
 document.getElementById('glicemia').addEventListener('input', aggiornaSpecificheTable);
-document.getElementById('Galmeql').addEventListener('input', aggiornaSpecificheTable);
-document.getElementById('Galgluperc').addEventListener('input', aggiornaSpecificheTable);
 document.getElementById('infusionepercentgluType').addEventListener('change', aggiornaSpecificheTable);
 
 document.querySelectorAll('.score-select').forEach(select => {
