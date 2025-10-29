@@ -78,11 +78,6 @@ body {
    Non ruotiamo più via CSS, lasciamo che la rotazione la faccia JS.
    Qui mettiamo solo spaziatura verticale più carina.
 */
-@media (max-width: 700px) {
-  .arrow {
-    margin: 20px auto;
-  }
-}
 
 /* Suggerimento per allineare gli elementi in alto sul desktop.
    Se già ti piace l'allineamento attuale puoi anche non aggiungerlo.
@@ -93,6 +88,28 @@ body {
   }
 }
 
+/* Modalità mobile/colonna forzata */
+.mobile-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;        /* così gli elementi figli non restano stretti sul lato */
+  gap: 10px;
+}
+
+/* In questa modalità, i container e la freccia diventano blocchi a tutta larghezza */
+.mobile-stack-child {
+  width: 100%;
+  max-width: 600px;   /* estetica: non diventano troppo larghi su tablet */
+}
+
+.mobile-stack .arrow {
+  /* qui la freccia occupa una riga tutta sua e sta in mezzo */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px auto 20px auto;
+}
 
 
 
