@@ -39,6 +39,46 @@ body {
 }
 
 
+/* Posizionamento della freccia */
+.arrow {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.3s ease;
+  order: 1; /* assicurati che la freccia stia tra container1 e container2 */
+}
+
+.arrow svg {
+  width: 100%;
+  height: 100%;
+  stroke: #ff0000;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* In layout desktop: i tuoi container sono già in flex, quindi la freccia si dispone accanto */
+@media (min-width: 701px) {
+  body {
+    align-items: flex-start; /* allinea in alto i container */
+  }
+}
+
+/* In layout mobile: la freccia va in colonna e si ruota verso il basso */
+@media (max-width: 700px) {
+  .arrow {
+    transform: rotate(90deg);
+    margin: 20px auto;
+    order: unset;
+  }
+}
+
+
+
+
 /* Stile per il cerchietto con il punto interrogativo */
 .input-container label {
     margin-right: 4px; /* Spazio tra l'etichetta e l'icona */
