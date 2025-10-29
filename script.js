@@ -830,57 +830,60 @@ document.getElementById('resetAllBtn').addEventListener('click', function() {
     aggiornaSpecificheTable();
 });	
 
-// --- CENTRATURA AUTOMATICA DELLA FRECCIA ---
-// Questo rende la freccia responsive e corretta anche quando ruoti lo schermo.
-
+// --- CENTRATURA AUTOMATICA DELLA FRECCIA + GESTIONE MOBILE STACK ---
 function centerArrow() {
     const box1 = document.getElementById("container1");
     const box2 = document.getElementById("container2");
     const arrow = document.querySelector(".arrow");
+    const bodyEl = document.body;
 
     if (!box1 || !box2 || !arrow) return;
 
-    // Riconosciamo "mobile-like" non solo dal width stretto,
-    // ma anche dalla tipica altezza bassa del telefono ruotato in orizzontale.
+    // Mobile-like = telefoni (anche ruotati), tablet stretti
+    // -> trattiamo questi casi come layout verticale "a blocchi", NON affiancati
     const isMobileLike = window.innerWidth <= 900 || window.innerHeight <= 500;
 
     if (isMobileLike) {
-        // Modalità verticale/colonna:
-        // - la freccia va tra i due container
-        // - deve puntare verso il basso
+        // 1. Mettiamo una classe al body che forza impilamento verticale pulito
+        bodyEl.classList.add("mobile-stack");
+
+        // 2. Assicuriamoci che i tre elementi principali si comportino da figli di quello stack
+        box1.classList.add("mobile-stack-child");
+        arrow.classList.add("mobile-stack-child");
+        box2.classList.add("mobile-stack-child");
+
+        // 3. Freccia gira verso il basso ed è centrata
         arrow.style.transform = "rotate(90deg)";
-        arrow.style.margin = "20px auto";
+        arrow.style.margin = ""; // il margine verticale viene dalla classe mobile-stack .arrow
+
         return;
     }
 
-    // Modalità desktop/tablet largo:
-    // - i due container sono affiancati
-    // - vogliamo la freccia centrata verticalmente rispetto al container di destra
-    const h2 = box2.offsetHeight;
+    // Se NON siamo in mobile-like:
+    // torniamo allo stato desktop normale (affiancato)
+    bodyEl.classList.remove("mobile-stack");
+    box1.classList.remove("mobile-stack-child");
+    arrow.classList.remove("mobile-stack-child");
+    box2.classList.remove("mobile-stack-child");
 
-    // Mettiamo la freccia all'altezza della metà del container2.
-    // La freccia è alta ~60px, quindi togliamo 30px per centrarla bene.
-    const offset = (h2 / 2) - 30;
+    // Allineamento verticale della freccia rispetto al container2
+    const h2 = box2.offsetHeight;
+    const offset = (h2 / 2) - 30; // metà altezza box2, meno metà altezza freccia (~60px/2)
 
     arrow.style.margin = "0";
     arrow.style.transform = `translateY(${offset}px)`;
 }
 
-// Ricalcola quando la pagina carica
+// Ricalcola nei momenti importanti
 window.addEventListener("load", centerArrow);
-
-// Ricalcola quando cambia dimensione lo schermo
 window.addEventListener("resize", centerArrow);
-
-// Ricalcola quando ruoti il dispositivo
 window.addEventListener("orientationchange", centerArrow);
 
-// Ricalcola quando cambiano i dati che aggiornano i calcoli/output
+// Ogni volta che cambiano i dati/calcoli che possono cambiare l'altezza dei box
 function safeCenterArrowWrapper() {
     centerArrow();
 }
 
-// Aggancia le stesse input che già usi per ricalcolare i risultati
 document.getElementById('WA').addEventListener('input', safeCenterArrowWrapper);
 document.getElementById('WW').addEventListener('input', safeCenterArrowWrapper);
 document.getElementById('Nai').addEventListener('input', safeCenterArrowWrapper);
@@ -891,12 +894,12 @@ document.getElementById('temperatura').addEventListener('input', safeCenterArrow
 document.getElementById('glicemia').addEventListener('input', safeCenterArrowWrapper);
 document.getElementById('infusionepercentgluType').addEventListener('change', safeCenterArrowWrapper);
 
-// Patchiamo aggiornaSpecificheTable per centrare la freccia
-// anche dopo ogni ricalcolo automatico che fai già
+// Patch di aggiornaSpecificheTable per ricentrare anche dopo i ricalcoli automatici
 const _aggiornaSpecificheTableOriginale = aggiornaSpecificheTable;
 aggiornaSpecificheTable = function() {
     _aggiornaSpecificheTableOriginale();
     centerArrow();
 };
+
 
 
