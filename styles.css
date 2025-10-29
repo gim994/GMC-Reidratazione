@@ -39,7 +39,7 @@ body {
 }
 
 
-/* Posizionamento della freccia */
+/* --- FRECCIA TRA I CONTAINER --- */
 .arrow {
   width: 60px;
   height: 60px;
@@ -47,34 +47,52 @@ body {
   justify-content: center;
   align-items: center;
   transition: transform 0.3s ease;
-  order: 1; /* assicurati che la freccia stia tra container1 e container2 */
+  /* niente transform fisso qui:
+     lo gestiamo via JS così è centrata in verticale */
+  order: 1; /* si posiziona tra container1 e container2 nel flex generale */
 }
 
 .arrow svg {
   width: 100%;
   height: 100%;
-  stroke: #ff0000;
+  stroke: #ff0000;      /* rosso come il resto dell'interfaccia */
   fill: none;
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+
+  /* opzionale estetico: leggero effetto hover su desktop
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
+  transition: transform 0.3s ease, stroke 0.3s ease;
+  */
 }
 
-/* In layout desktop: i tuoi container sono già in flex, quindi la freccia si dispone accanto */
-@media (min-width: 701px) {
-  body {
-    align-items: flex-start; /* allinea in alto i container */
-  }
+/* opzionale estetico hover:
+.arrow:hover svg {
+  transform: scale(1.1);
+  stroke: #cc0000;
 }
+*/
 
-/* In layout mobile: la freccia va in colonna e si ruota verso il basso */
+/* MOBILE / SCHERMI PICCOLI
+   Non ruotiamo più via CSS, lasciamo che la rotazione la faccia JS.
+   Qui mettiamo solo spaziatura verticale più carina.
+*/
 @media (max-width: 700px) {
   .arrow {
-    transform: rotate(90deg);
     margin: 20px auto;
-    order: unset;
   }
 }
+
+/* Suggerimento per allineare gli elementi in alto sul desktop.
+   Se già ti piace l'allineamento attuale puoi anche non aggiungerlo.
+*/
+@media (min-width: 701px) {
+  body {
+    align-items: flex-start;
+  }
+}
+
 
 
 
