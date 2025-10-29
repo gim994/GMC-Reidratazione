@@ -830,37 +830,73 @@ document.getElementById('resetAllBtn').addEventListener('click', function() {
     aggiornaSpecificheTable();
 });	
 
-// --- CENTRATURA AUTOMATICA DELLA FRECCIA (senza wrapper) ---
+// --- CENTRATURA AUTOMATICA DELLA FRECCIA ---
+// Questo rende la freccia responsive e corretta anche quando ruoti lo schermo.
+
 function centerArrow() {
-  const box1 = document.getElementById("container1");
-  const box2 = document.getElementById("container2");
-  const arrow = document.querySelector(".arrow");
+    const box1 = document.getElementById("container1");
+    const box2 = document.getElementById("container2");
+    const arrow = document.querySelector(".arrow");
 
-  if (!box1 || !box2 || !arrow) return;
+    if (!box1 || !box2 || !arrow) return;
 
-  if (window.innerWidth <= 700) {
-    arrow.style.transform = "rotate(90deg)";
-    arrow.style.margin = "20px auto";
-    return;
-  }
+    // Riconosciamo "mobile-like" non solo dal width stretto,
+    // ma anche dalla tipica altezza bassa del telefono ruotato in orizzontale.
+    const isMobileLike = window.innerWidth <= 900 || window.innerHeight <= 500;
 
-  // Altezze reali
-  const h1 = box1.offsetHeight;
-  const h2 = box2.offsetHeight;
+    if (isMobileLike) {
+        // Modalità verticale/colonna:
+        // - la freccia va tra i due container
+        // - deve puntare verso il basso
+        arrow.style.transform = "rotate(90deg)";
+        arrow.style.margin = "20px auto";
+        return;
+    }
 
-  // Calcola un offset verticale (qui usiamo il centro del più basso)
-  const offset = (Math.min(h1, h2) / 2) - 30;
+    // Modalità desktop/tablet largo:
+    // - i due container sono affiancati
+    // - vogliamo la freccia centrata verticalmente rispetto al container di destra
+    const h2 = box2.offsetHeight;
 
-  // Applica lo spostamento
-  arrow.style.transform = `translateY(${offset}px)`;
+    // Mettiamo la freccia all'altezza della metà del container2.
+    // La freccia è alta ~60px, quindi togliamo 30px per centrarla bene.
+    const offset = (h2 / 2) - 30;
+
+    arrow.style.margin = "0";
+    arrow.style.transform = `translateY(${offset}px)`;
 }
 
+// Ricalcola quando la pagina carica
 window.addEventListener("load", centerArrow);
+
+// Ricalcola quando cambia dimensione lo schermo
 window.addEventListener("resize", centerArrow);
 
-// Richiama anche dopo gli aggiornamenti dinamici
+// Ricalcola quando ruoti il dispositivo
+window.addEventListener("orientationchange", centerArrow);
+
+// Ricalcola quando cambiano i dati che aggiornano i calcoli/output
+function safeCenterArrowWrapper() {
+    centerArrow();
+}
+
+// Aggancia le stesse input che già usi per ricalcolare i risultati
+document.getElementById('WA').addEventListener('input', safeCenterArrowWrapper);
+document.getElementById('WW').addEventListener('input', safeCenterArrowWrapper);
+document.getElementById('Nai').addEventListener('input', safeCenterArrowWrapper);
+document.getElementById('Nap').addEventListener('change', safeCenterArrowWrapper);
+document.getElementById('vomiti').addEventListener('input', safeCenterArrowWrapper);
+document.getElementById('diarrea').addEventListener('input', safeCenterArrowWrapper);
+document.getElementById('temperatura').addEventListener('input', safeCenterArrowWrapper);
+document.getElementById('glicemia').addEventListener('input', safeCenterArrowWrapper);
+document.getElementById('infusionepercentgluType').addEventListener('change', safeCenterArrowWrapper);
+
+// Patchiamo aggiornaSpecificheTable per centrare la freccia
+// anche dopo ogni ricalcolo automatico che fai già
 const _aggiornaSpecificheTableOriginale = aggiornaSpecificheTable;
 aggiornaSpecificheTable = function() {
-  _aggiornaSpecificheTableOriginale();
-  centerArrow();
+    _aggiornaSpecificheTableOriginale();
+    centerArrow();
 };
+
+
