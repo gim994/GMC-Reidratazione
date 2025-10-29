@@ -829,3 +829,38 @@ document.getElementById('resetAllBtn').addEventListener('click', function() {
     aggiornaScoretable();
     aggiornaSpecificheTable();
 });	
+
+// --- CENTRATURA AUTOMATICA DELLA FRECCIA (senza wrapper) ---
+function centerArrow() {
+  const box1 = document.getElementById("container1");
+  const box2 = document.getElementById("container2");
+  const arrow = document.querySelector(".arrow");
+
+  if (!box1 || !box2 || !arrow) return;
+
+  if (window.innerWidth <= 700) {
+    arrow.style.transform = "rotate(90deg)";
+    arrow.style.margin = "20px auto";
+    return;
+  }
+
+  // Altezze reali
+  const h1 = box1.offsetHeight;
+  const h2 = box2.offsetHeight;
+
+  // Calcola un offset verticale (qui usiamo il centro del più basso)
+  const offset = (Math.min(h1, h2) / 2) - 30;
+
+  // Applica lo spostamento
+  arrow.style.transform = `translateY(${offset}px)`;
+}
+
+window.addEventListener("load", centerArrow);
+window.addEventListener("resize", centerArrow);
+
+// Richiama anche dopo gli aggiornamenti dinamici
+const _aggiornaSpecificheTableOriginale = aggiornaSpecificheTable;
+aggiornaSpecificheTable = function() {
+  _aggiornaSpecificheTableOriginale();
+  centerArrow();
+};
