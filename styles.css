@@ -11,6 +11,15 @@ body {
 	flex-wrap: wrap;
 }
 
+/* Mostra solo la lingua selezionata */
+:root[data-ui-lang="it"] .lang-en,
+html[data-ui-lang="it"] .lang-en,
+body[data-ui-lang="it"] .lang-en { display: none !important; }
+
+:root[data-ui-lang="en"] .lang-it,
+html[data-ui-lang="en"] .lang-it,
+body[data-ui-lang="en"] .lang-it { display: none !important; }
+
 .header {
     display: flex;
     align-items: center; /* Allinea verticalmente */
@@ -37,6 +46,10 @@ body {
 .option-buttons {
   display: none;
 }
+
+.main-row { display:flex; gap:30px; align-items:flex-start; }
+/* rimuovi questa riga, o annullala */
+
 
 
 /* --- FRECCIA TRA I CONTAINER --- */
@@ -584,3 +597,128 @@ table input[type="number"] {
         text-align: center; /* Centra il testo dei bottoni */
     }
 	}
+	
+	/* ===== TOGGLE LINGUA (definitivo) ===== */
+.lang-toggle-inline,
+#infoBox .header .lang-toggle-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f4f4f4 !important;
+  border: none !important;           /* niente bordo */
+  border-radius: 999px;
+  padding: 6px 10px;
+  margin: 10px 0 16px 0;
+  box-shadow: none !important;
+}
+
+/* Bottoni bandiera */
+.lang-toggle-inline button {
+  width: 36px;
+  height: 24px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: 100% 100% !important;   /* riempi tutto, zero tagli */
+  cursor: pointer;
+  transition: transform .15s ease, border-color .15s ease, background-color .15s ease;
+  text-indent: -9999px;  /* nasconde IT/EN */
+  overflow: hidden;
+  padding: 0;
+}
+
+/* 🇮🇹 IT */
+/* Contenitore: stesso bg del pannello, niente bordo/ombra */
+.lang-toggle-inline{
+  background:#f4f4f4 !important;
+  border:none !important;
+  box-shadow:none !important;
+}
+
+/* 🇮🇹 Italia (ok com’era) */
+#btnIT{
+  background-image:url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 2'>\
+<rect width='1' height='2' fill='%23009b3a'/>\
+<rect x='1' width='1' height='2' fill='%23ffffff'/>\
+<rect x='2' width='1' height='2' fill='%23ce2b37'/>\
+</svg>");
+}
+
+/* 🇬🇧 Union Jack con DIAGONALI corrette */
+#btnEN{
+  background-image:url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'>\
+<rect width='60' height='30' fill='%23012169'/>\
+<path d='M0 0 L60 30 M60 0 L0 30' stroke='%23ffffff' stroke-width='6'/>\
+<path d='M0 0 L60 30 M60 0 L0 30' stroke='%23c8102e' stroke-width='2'/>\
+<rect x='25' width='10' height='30' fill='%23ffffff'/>\
+<rect y='10' width='60' height='10' fill='%23ffffff'/>\
+<rect x='27' width='6' height='30' fill='%23c8102e'/>\
+<rect y='12' width='60' height='6' fill='%23c8102e'/>\
+</svg>");
+}
+
+
+/* Hover / Attivo */
+.lang-toggle-inline button:hover { transform: scale(1.06); }
+.lang-toggle-inline button[aria-pressed="true"] {
+  border-color: #ff0000;
+  background-color: #fff;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .lang-toggle-inline { gap: 6px; padding: 4px 8px; }
+  .lang-toggle-inline button { width: 30px; height: 20px; }
+}
+
+#WWs {
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+  background: transparent;        /* oppure: background-color: inherit; */
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0;
+  width: 100%;
+  color: inherit;                  /* usa lo stesso colore della cella */
+}
+
+/* alcuni browser danno un grigio ai read-only: forziamo trasparente */
+#WWs[readonly] {
+  background-color: transparent;
+}
+
+/* Desktop: 3 colonne stabili + freccia in mezzo */
+@media (min-width: 1100px) {
+
+  .container,
+  .container2,
+  .containermenù {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .container {        /* Compila i campi (sx) */
+    flex: 1 1 420px;
+    min-width: 380px;
+  }
+
+  .arrow {
+    flex: 0 0 50px;   /* non ruba spazio */
+  }
+
+  .container2 {       /* Infusione ideale (centro) */
+    flex: 1 1 420px;
+    min-width: 380px;
+  }
+
+  .containermenù {    /* Menù (dx) */
+    flex: 0 0 210px;
+    align-self: flex-start;
+    position: sticky;   /* comodo: resta visibile */
+    top: 20px;
+  }
+}
