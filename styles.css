@@ -383,29 +383,105 @@ body[data-ui-lang="en"] .lang-it { display: none !important; }
     flex: 0 0 auto; /* Assicura che non occupi spazio */
 }
 
-table {
+/* ===== TABELLA SPECIFICHE =====
+   Usa questa classe sul tuo <table> delle specifiche */
+.specifiche-table {
     width: 100%;
+    min-width: 900px;         /* forza lo scroll mobile se lo schermo è stretto */
     border-collapse: collapse;
-    border: 2px solid #ff0000;
+    table-layout: fixed;
+    font-size: 13px;
+    font-weight: bold;
+    color: #000;
+    background-color: #fff;
 }
 
-table td, table th {
-    border: 2px solid #ff0000;
+/* Celle normali */
+.specifiche-table th,
+.specifiche-table td {
+    border: 2px solid #ff0000; /* lo stesso bordo rosso che hai già */
     padding: 8px;
+    text-align: center;
+    background-color: #fff;
+    color: #000;
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Titolo "Dettaglio del calcolo relativo al programma infusionale"
+   (prima riga della tabella, quella con una sola cella che span-na tutte le colonne):
+   -> resta bianco, testo nero, centrato. */
+.specifiche-table tr:first-child th,
+.specifiche-table tr:first-child td {
+    background-color: #fff;
+    color: #000;
+    text-align: center;
+    white-space: normal;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* Riga delle intestazioni di colonna (Volume ml / Na mEq / ...):
+   è la SECONDA riga nella tua tabella.
+   -> resta bianca con testo nero, bordi rossi esattamente come nello screenshot. */
+.specifiche-table tr:nth-child(2) th {
+    background-color: #fff;
+    color: #000;
     text-align: center;
     font-weight: bold;
 }
 
-table th {
-    background-color: #ff0000;
-    color: white;
-}
-
-table td {
+/* Righe dati (Perdite, Perdite Prevedibili, ...):
+   dalla terza riga in giù. Rimangono bianche. */
+.specifiche-table tr:nth-child(n+3) td {
     background-color: #fff;
     color: #000;
 }
 
+/* ===== PRIMA COLONNA STICKY =====
+   Qui blocchiamo la colonna di sinistra ("Perdite", "Perdite Prevedibili", ecc.)
+   mentre si scrolla in orizzontale sul telefono.
+*/
+.specifiche-table tr:nth-child(n+2) th:first-child,
+.specifiche-table tr:nth-child(n+2) td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;               /* sopra le altre celle quando scorri */
+    text-align: left;
+    padding-left: 8px;
+    min-width: 140px;         /* larghezza minima leggibile */
+    max-width: 200px;
+    background-color: #fff;   /* IMPORTANTISSIMO: resta bianco */
+    color: #000;
+}
+
+/* Nota: la primissima riga (il titolo lungo) non deve essere sticky */
+.specifiche-table tr:first-child th:first-child,
+.specifiche-table tr:first-child td:first-child {
+    position: static;
+    left: auto;
+    z-index: auto;
+    text-align: center;
+    min-width: auto;
+    max-width: none;
+    background-color: #fff;
+    color: #000;
+}
+
+/* Responsive: stringiamo padding/font su schermi molto piccoli */
+@media (max-width: 480px) {
+    .specifiche-table th,
+    .specifiche-table td {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    .specifiche-table tr:nth-child(n+2) th:first-child,
+    .specifiche-table tr:nth-child(n+2) td:first-child {
+        min-width: 120px;
+        max-width: 160px;
+    }
+}
 .hidden-container {
     display: none;
     border: none;
@@ -722,3 +798,4 @@ table input[type="number"] {
     top: 20px;
   }
 }
+
