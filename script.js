@@ -1,3 +1,15 @@
+// Bootstrap lingua: garantisce data-ui-lang PRIMA del paint
+(function(){
+  let lang = 'it';
+  try {
+    const saved = localStorage.getItem('lang') || localStorage.getItem('ui_lang');
+    if (saved === 'en' || saved === 'it') lang = saved;
+  } catch(e){}
+  document.documentElement.lang = lang;
+  document.documentElement.setAttribute('data-ui-lang', lang);
+  document.body && document.body.setAttribute('data-ui-lang', lang);
+})();
+
 const numberOutput1Container = document.getElementById('numberOutput1Container');
 const numberOutput2Container = document.getElementById('numberOutput2Container');
 const numberOutput3Container = document.getElementById('numberOutput3Container');
@@ -239,11 +251,16 @@ closeButtonFormule.addEventListener("click", function() {
 
 
 document.getElementById('advancedBtn').addEventListener('click', function() {
-    let advancedContainer = document.getElementById('advancedContainer');
-    advancedContainer.classList.toggle('hidden');
-    
-    this.textContent = advancedContainer.classList.contains('hidden') ? 'Avanzato' : 'Nascondi Avanzato';
+  const advancedContainer = document.getElementById('advancedContainer');
+  const lang = document.documentElement.getAttribute('data-ui-lang') || 'it';
+  advancedContainer.classList.toggle('hidden');
+
+  const show = this.getAttribute(lang === 'it' ? 'data-text-it' : 'data-text-en');
+  const hide = this.getAttribute(lang === 'it' ? 'data-hide-it' : 'data-hide-en');
+
+  this.textContent = advancedContainer.classList.contains('hidden') ? show : hide;
 });
+
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -411,40 +428,92 @@ function showCalculatedAge(age, unit) {
     }
 }
 
-	function aggiornaScoretable() {
-    let scoreElements = [
-        'condizioniGenerali',
-        'refill',
-        'lacrime',
-        'mucose',
-        'occhi',
-        'respiro',
-        'polso',
-        'elasticitaCutanea',
-        'frequenzaCardiaca',
-        'urine'
-    ];
-
-    let totalScore = 0;
-
-    scoreElements.forEach((id, index) => {
-        let value = parseFloat(document.getElementById(id).value) || 0;
-        totalScore += value;
-        document.getElementById(`score${index + 1}`).innerText = value;
-    });
-
-    document.getElementById('totalScore').innerText = totalScore;
-
-    if (pesoBenessereBtn.classList.contains('active')) {
-        let WA = parseFloat(document.getElementById('WA').value) || 0;
-        let WWs = (100 * WA / (100 - totalScore)).toFixed(2);
-        document.getElementById('WWs').value = WWs;
-    } else if (pesoAttualeBtn.classList.contains('active')) {
-        let WW = parseFloat(document.getElementById('WW').value) || 0;
-        let WWs = (WW * (100 - totalScore) / 100).toFixed(2);
-        document.getElementById('WWs').value = WWs;
-    }
+function gorelickCaps(totalScore) {
+  // <3 segni -> <5% | 3–5 segni -> 5–9% | ≥6 segni -> ≥10%
+  if (totalScore <= 2) {
+    return { label: "<5%", pMin: 0,  pMax: 4.9, classe: "Assente/minima" };
+  } else if (totalScore <= 5) {
+    return { label: "5–9%", pMin: 5,  pMax: 9,   classe: "Moderata" };
+  } else {
+    return { label: "≥10%", pMin: 10, pMax: null, classe: "Grave" }; // nessun upper bound
+  }
 }
+function setIfExists(id, value) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if ('value' in el) el.value = value;
+  else el.innerText = value;
+}
+function fmtNum(n){ return n.toFixed(1); }
+function fmtRangeNum(a,b){ return `${fmtNum(a)}–${fmtNum(b)}`; }
+
+function aggiornaScoretable() {
+  const scoreElements = [
+    'condizioniGenerali','refill','lacrime','mucose','occhi',
+    'respiro','polso','elasticitaCutanea','frequenzaCardiaca','urine'
+  ];
+
+  let totalScore = 0;
+  scoreElements.forEach((id, index) => {
+    const v = parseFloat(document.getElementById(id)?.value) || 0;
+    totalScore += v;
+    const cell = document.getElementById(`score${index + 1}`);
+    if (cell) cell.innerText = v;
+  });
+
+  setIfExists('totalScore', totalScore);
+
+  // Mappa ai cap Gorelick
+  const { label, pMin, pMax, classe } = gorelickCaps(totalScore);
+  setIfExists('percentRange', label);
+  setIfExists('classeGorelick', classe);
+
+  const benActive = !!document.querySelector('#pesoBenessereBtn.active'); // ho WA -> stimo WW
+  const attActive = !!document.querySelector('#pesoAttualeBtn.active');   // ho WW -> stimo WA
+
+  // Pulisci eventuali output range extra (se li usi)
+  setIfExists('WWsMin',''); setIfExists('WWsMax','');
+  setIfExists('WAsMin',''); setIfExists('WAsMax','');
+  setIfExists('lossMin',''); setIfExists('lossMax','');
+
+  // Mostreremo SEMPRE un range (o un bound) nel campo WWs
+  let WWsDisplay = '';
+
+  if (benActive) {
+    // WA noto -> stimo range WW (peso in benessere)
+    const WA = parseFloat(document.getElementById('WA')?.value) || 0;
+    if (WA > 0) {
+      if (pMax === null) {
+        // ≥10%: solo lower bound -> WW ≥ WA/(1-0.10)
+        const WW_lower = WA / (1 - pMin/100); // 10%
+        WWsDisplay = `≥ ${fmtNum(WW_lower)}`;
+      } else {
+        const WW_low  = WA / (1 - pMin/100);  // deficit minore -> WW più basso
+        const WW_high = WA / (1 - pMax/100);  // deficit maggiore -> WW più alto
+        WWsDisplay = fmtRangeNum(WW_low, WW_high);
+      }
+    }
+  } else if (attActive) {
+    // WW noto -> stimo range WA (peso attuale)
+    const WW = parseFloat(document.getElementById('WW')?.value) || 0;
+    if (WW > 0) {
+      if (pMax === null) {
+        // ≥10%: upper bound per WA (più basso dei due)
+        const WA_upper = WW * (1 - pMin/100); // 10%
+        WWsDisplay = `≤ ${fmtNum(WA_upper)}`;
+      } else {
+        const WA_low  = WW * (1 - pMax/100);  // deficit maggiore -> WA più basso
+        const WA_high = WW * (1 - pMin/100);  // deficit minore -> WA più alto
+        WWsDisplay = fmtRangeNum(WA_low, WA_high);
+      }
+    }
+  }
+
+  // Scrivi il RANGE direttamente nel tuo campo esistente
+  setIfExists('WWs', WWsDisplay);
+}
+
+
 
 document.getElementById('ScoreBtn').addEventListener('click', function() {
     toggleVisibility('Scoretable', this, 'Score', 'Nascondi Score');
@@ -472,14 +541,20 @@ function setActivePesoButton(buttonId) {
 }
 
 document.getElementById('resetScoreBtn').addEventListener('click', function() {
-    // Resetta i valori degli score
-    document.querySelectorAll('.score-select').forEach(select => {
-        select.value = '0';  // Resetta i dropdown agli score di base
-    });
-    document.getElementById('totalScore').innerText = '0';
-    document.getElementById('WWs').value = '';
-    aggiornaScoretable();  // Aggiorna la tabella con i valori resettati
+  // Resetta i valori degli score
+  document.querySelectorAll('.score-select').forEach(select => {
+    select.value = '0';  // Resetta i dropdown agli score di base
+  });
+
+  document.getElementById('totalScore').innerText = '0';
+
+  // reset universale per #WWs (funziona con input o span)
+  const el = document.getElementById('WWs');
+  if (el) ('value' in el ? el.value = '' : el.innerText = '');
+
+  aggiornaScoretable();  // Aggiorna la tabella con i valori resettati
 });
+
 
 document.getElementById('specificheBtn').addEventListener('click', function() {
     toggleVisibility('Specifichetable', this, 'Dettaglio', 'Nascondi Dettaglio');
@@ -829,6 +904,13 @@ document.getElementById('resetAllBtn').addEventListener('click', function() {
     // Aggiorna eventuali calcoli che potrebbero essere necessari dopo il reset
     aggiornaScoretable();
     aggiornaSpecificheTable();
+	
+		// 🔁 Ripristina la lingua attuale salvata dopo il reset
+try {
+  const savedLang = localStorage.getItem('lang') || localStorage.getItem('ui_lang') || 'it';
+  if (typeof setLang === 'function') setLang(savedLang);
+} catch(e) {}
+	
 });	
 
 // --- CENTRATURA AUTOMATICA DELLA FRECCIA + GESTIONE MOBILE STACK ---
@@ -902,5 +984,104 @@ aggiornaSpecificheTable = function() {
     centerArrow();
 };
 
+// === Language switch (UNICO modulo) ===
+(function(){
+  const htmlEl = document.documentElement;
+  const body = document.body;
+  const btnIT = document.getElementById('btnIT');
+  const btnEN = document.getElementById('btnEN');
 
+  function setPressed(lang){
+    if (!btnIT || !btnEN) return;
+    btnIT.setAttribute('aria-pressed', String(lang==='it'));
+    btnEN.setAttribute('aria-pressed', String(lang==='en'));
+  }
+
+  function applyAttr(lang){
+    const spec = [
+      { attr: 'placeholder', dataIt: 'data-placeholder-it', dataEn: 'data-placeholder-en' },
+      { attr: 'title',       dataIt: 'data-title-it',       dataEn: 'data-title-en' },
+      { attr: 'aria-label',  dataIt: 'data-aria-it',        dataEn: 'data-aria-en' },
+    ];
+    const nodes = document.querySelectorAll(
+      '[data-placeholder-it], [data-placeholder-en], [data-title-it], [data-title-en], [data-aria-it], [data-aria-en]'
+    );
+    nodes.forEach(el => {
+      spec.forEach(({attr, dataIt, dataEn}) => {
+        const val = (lang === 'it') ? el.getAttribute(dataIt) : el.getAttribute(dataEn);
+        if (val != null) el.setAttribute(attr, val);
+      });
+    });
+  }
+
+  function applyText(lang){
+    const nodes = document.querySelectorAll('[data-text-it], [data-text-en]');
+    nodes.forEach(el => {
+      const val = (lang==='it') ? el.getAttribute('data-text-it') : el.getAttribute('data-text-en');
+      if (val != null) el.textContent = val;
+    });
+  }
+
+  function applyInner(lang){
+    document.querySelectorAll('[data-it],[data-en]').forEach(el=>{
+      const val = el.getAttribute(lang === 'it' ? 'data-it' : 'data-en');
+      if (val != null) el.innerHTML = val;
+    });
+    document.querySelectorAll('option[data-it], option[data-en]').forEach(opt=>{
+      const t = opt.getAttribute(lang==='it'?'data-it':'data-en');
+      if (t != null) opt.textContent = t;
+    });
+  }
+
+  function getLang(){
+    try {
+      const saved = localStorage.getItem('lang') || localStorage.getItem('ui_lang');
+      if (saved === 'it' || saved === 'en') return saved;
+    } catch(e){}
+    return (document.documentElement.lang === 'en') ? 'en' : 'it';
+  }
+
+  function setLang(lang){
+    try { localStorage.setItem('lang', lang); localStorage.setItem('ui_lang', lang); } catch(e){}
+    htmlEl.lang = lang;
+    htmlEl.setAttribute('data-ui-lang', lang);
+    if (body) body.setAttribute('data-ui-lang', lang);
+    setPressed(lang);
+    applyInner(lang);
+    applyText(lang);
+    applyAttr(lang);
+
+    const menuToggle = document.getElementById('menuToggle');
+    if (menuToggle){
+      const aria = menuToggle.getAttribute(lang==='it'?'data-aria-it':'data-aria-en');
+      if (aria) menuToggle.setAttribute('aria-label', aria);
+    }
+    const menuClose = document.getElementById('menuClose');
+    if (menuClose){
+      const aria = menuClose.getAttribute(lang==='it'?'data-aria-it':'data-aria-en');
+      if (aria) menuClose.setAttribute('aria-label', aria);
+    }
+  }
+
+  if (btnIT) btnIT.addEventListener('click', ()=> setLang('it'));
+  if (btnEN) btnEN.addEventListener('click', ()=> setLang('en'));
+
+  // Init
+  const initialLang = getLang();
+  setLang(initialLang);
+
+  // Aggiorna anche i testi dei bottoni toggle in base alla lingua corrente
+  document.querySelectorAll('[data-text-it][data-text-en]').forEach(btn => {
+    const currentLang = document.documentElement.getAttribute('data-ui-lang') || initialLang || 'it';
+    const val = btn.getAttribute(currentLang === 'it' ? 'data-text-it' : 'data-text-en');
+    if (val) btn.textContent = val;
+  });
+
+  // Hint placeholder per datepicker
+  const dateInput = document.getElementById('birthdate');
+  if (dateInput) {
+    const userLang = navigator.language || 'it-IT';
+    dateInput.setAttribute('placeholder', userLang === 'en-US' ? 'MM/DD/YYYY' : 'DD/MM/YYYY');
+  }
+})();
 
